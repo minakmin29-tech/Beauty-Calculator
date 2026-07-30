@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ценовой калькулятор — Beauty Studio</title>
+<link rel="stylesheet" href="style.css">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+ 
+<header>
+  <h1>Beauty Calculator</h1>
+  <span>Калькулятор цен на услуги</span>
+</header>
+ 
+<div class="container">
+  <div class="grid">
+ 
+    <div>
+ 
+      <div class="card" style="margin-bottom: 20px;">
+        <div class="card-title">
+          <div class="icon">⚙</div>
+          Общие параметры
+        </div>
+ 
+        <div class="field-row">
+          <div class="field">
+            <label>Ставка в час</label>
+            <div class="unit-wrap">
+              <input type="number" id="hourly" value="500" min="100" step="50">
+              <span class="unit">₽</span>
+            </div>
+          </div>
+          <div class="field">
+            <label>Заказов в месяц</label>
+            <input type="number" id="orders" value="20" min="1" step="1">
+          </div>
+        </div>
+ 
+        <div class="field-row">
+          <div class="field">
+            <label>Накладные в месяц</label>
+            <div class="unit-wrap">
+              <input type="number" id="overhead" value="5000" min="0" step="500">
+              <span class="unit">₽</span>
+            </div>
+          </div>
+          <div class="field">
+            <label>Наценка (прибыль)</label>
+            <div class="unit-wrap">
+              <input type="number" id="margin" value="20" min="0" max="200" step="5">
+              <span class="unit">%</span>
+            </div>
+          </div>
+        </div>
+ 
+        <div class="field">
+          <label>Скидка «начинающий» (временная)</label>
+          <div class="unit-wrap">
+            <input type="number" id="discount" value="15" min="0" max="50" step="5">
+            <span class="unit">%</span>
+          </div>
+        </div>
+      </div>
+ 
+      <div class="card">
+        <div class="tabs">
+          <div class="tab active" onclick="switchTab('makeup')">💄 Макияж</div>
+          <div class="tab" onclick="switchTab('hair')">💇 Причёска</div>
+        </div>
+ 
+        <div class="tab-panel active" id="panel-makeup">
+          <div class="hint">Расход косметики — делите цену упаковки на количество применений. Например, тональный крем 1200 ₽ на 20 нанесений = 60 ₽/услуга.</div>
+          <div class="field-row">
+            <div class="field">
+              <label>Время услуги</label>
+              <div class="unit-wrap">
+                <input type="number" id="m-time" value="90" min="15" step="15">
+                <span class="unit">мин</span>
+              </div>
+            </div>
+            <div class="field">
+              <label>Расход косметики</label>
+              <div class="unit-wrap">
+                <input type="number" id="m-cosm" value="300" min="0" step="50">
+                <span class="unit">₽</span>
+              </div>
+            </div>
+          </div>
+          <div class="field">
+            <label>Расходники (кисти, спонжи, аппликаторы)</label>
+            <div class="unit-wrap">
+              <input type="number" id="m-cons" value="50" min="0" step="10">
+              <span class="unit">₽</span>
+            </div>
+          </div>
+        </div>
+ 
+        <div class="tab-panel" id="panel-hair">
+          <div class="hint">Средства для укладки (лак, пенка, термозащита) расходуются на несколько услуг — оценивайте их долю от общего объёма упаковки.</div>
+          <div class="field-row">
+            <div class="field">
+              <label>Время услуги</label>
+              <div class="unit-wrap">
+                <input type="number" id="h-time" value="60" min="15" step="15">
+                <span class="unit">мин</span>
+              </div>
+            </div>
+            <div class="field">
+              <label>Расход средств</label>
+              <div class="unit-wrap">
+                <input type="number" id="h-prod" value="150" min="0" step="25">
+                <span class="unit">₽</span>
+              </div>
+            </div>
+          </div>
+          <div class="field">
+            <label>Расходники (шпильки, резинки, невидимки)</label>
+            <div class="unit-wrap">
+              <input type="number" id="h-cons" value="30" min="0" step="10">
+              <span class="unit">₽</span>
+            </div>
+          </div>
+        </div>
+ 
+      </div>
+    </div>
+ 
+    <div class="results">
+      <div class="results-title">Результат расчёта</div>
+ 
+      <div class="price-block">
+        <div class="price-label">Макияж</div>
+        <div class="price-value" id="out-makeup">—</div>
+        <div class="price-note" id="out-makeup-base"></div>
+      </div>
+ 
+      <hr class="divider">
+ 
+      <div class="price-block">
+        <div class="price-label">Причёска</div>
+        <div class="price-value" id="out-hair">—</div>
+        <div class="price-note" id="out-hair-base"></div>
+      </div>
+ 
+      <hr class="divider">
+ 
+      <div class="price-block">
+        <div class="discount-badge" id="discount-badge">−15% скидка</div>
+        <div class="price-label">Макияж + причёска вместе</div>
+        <div class="price-value" style="font-size: 32px;" id="out-combo">—</div>
+      </div>
+ 
+      <hr class="divider">
+ 
+      <div class="breakdown" id="breakdown-makeup">
+        <div class="breakdown-title">💄 Себестоимость макияжа</div>
+        <div class="breakdown-row"><span>Материалы</span><span id="b-m-mat">—</span></div>
+        <div class="breakdown-row"><span>Труд</span><span id="b-m-labor">—</span></div>
+        <div class="breakdown-row"><span>Накладные</span><span id="b-m-over">—</span></div>
+        <div class="breakdown-row total"><span>Себестоимость</span><span id="b-m-cost">—</span></div>
+      </div>
+ 
+      <div class="breakdown" id="breakdown-hair">
+        <div class="breakdown-title">💇 Себестоимость причёски</div>
+        <div class="breakdown-row"><span>Материалы</span><span id="b-h-mat">—</span></div>
+        <div class="breakdown-row"><span>Труд</span><span id="b-h-labor">—</span></div>
+        <div class="breakdown-row"><span>Накладные</span><span id="b-h-over">—</span></div>
+        <div class="breakdown-row total"><span>Себестоимость</span><span id="b-h-cost">—</span></div>
+      </div>
+ 
+    </div>
+ 
+  </div>
+</div>
+ 
+<footer>
+  <div class="accordion">
+    <button class="accordion-trigger" onclick="toggleHelp(this)" aria-expanded="false">
+      <span>Что вписывать в каждое поле?</span>
+      <svg class="accordion-arrow" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M4 6.5L9 11.5L14 6.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+    <div class="accordion-body" id="help-body">
+      <div class="accordion-inner">
+        <div class="accordion-content">
+          <div class="help-item">
+            <div class="help-dot"></div>
+            <div>
+              <div class="help-term">Ставка в час</div>
+              <div class="help-desc">Сколько вы хотите зарабатывать за час работы. Для старта 400–600 ₽ — разумно.</div>
+            </div>
+          </div>
+          <div class="help-item">
+            <div class="help-dot"></div>
+            <div>
+              <div class="help-term">Заказов в месяц</div>
+              <div class="help-desc">Сколько клиентов вы реально ожидаете. Если 1–2, ставьте 2 — накладные лягут на каждый заказ честно.</div>
+            </div>
+          </div>
+          <div class="help-item">
+            <div class="help-dot"></div>
+            <div>
+              <div class="help-term">Накладные в месяц</div>
+              <div class="help-desc">Всё что тратите независимо от клиентов: дорога, кисти на замену, реклама, телефон.</div>
+            </div>
+          </div>
+          <div class="help-item">
+            <div class="help-dot"></div>
+            <div>
+              <div class="help-term">Наценка</div>
+              <div class="help-desc">Ваша прибыль сверх себестоимости. 15–30% для начала — нормально.</div>
+            </div>
+          </div>
+          <div class="help-item">
+            <div class="help-dot"></div>
+            <div>
+              <div class="help-term">Скидка «начинающий»</div>
+              <div class="help-desc">Временная акция пока нарабатываете портфолио. Потом просто ставите 0.</div>
+            </div>
+          </div>
+          <div class="help-item">
+            <div class="help-dot"></div>
+            <div>
+              <div class="help-term">Время услуги</div>
+              <div class="help-desc">Сколько минут реально уходит на клиента — включая подготовку и уборку.</div>
+            </div>
+          </div>
+          <div class="help-item">
+            <div class="help-dot"></div>
+            <div>
+              <div class="help-term">Расход косметики / средств</div>
+              <div class="help-desc">Цена упаковки ÷ количество применений. Тональный 1200 ₽ на 20 нанесений = 60 ₽.</div>
+            </div>
+          </div>
+          <div class="help-item">
+            <div class="help-dot"></div>
+            <div>
+              <div class="help-term">Расходники</div>
+              <div class="help-desc">Одноразовые кисточки, спонжи, шпильки, резинки — то, что остаётся у клиента или выбрасывается.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="footer-note">Beauty Calculator · Введите данные слева, цены обновятся автоматически</div>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
